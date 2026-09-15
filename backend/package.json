@@ -9,7 +9,8 @@
     "dev": "nodemon --require dotenv/config src/server.js",
     "frontend": "npm start --prefix frontend",
     "frontend:build": "npm run build --prefix frontend",
-    "update-agent": "node scripts/updateBolnaAgent.js"
+    "update-agent": "node scripts/updateBolnaAgent.js",
+    "migrate": "node scripts/runMigration.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

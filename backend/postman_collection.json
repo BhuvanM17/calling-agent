@@ -1,0 +1,367 @@
+{
+  "info": {
+    "_postman_id": "bizzhub-calling-agent-v1",
+    "name": "BizzHub Calling Agent API",
+    "description": "Postman Collection for BizzHub Calling Agent & CRM Backend (MySQL / HubManage Architecture)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "leadId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "System & Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads Management",
+      "item": [
+        {
+          "name": "1. Create Lead",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.lead && json.data.lead.id) {",
+                  "    pm.collectionVariables.set('leadId', json.data.lead.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Vikram Reddy\",\n  \"phone\": \"+91 9845012345\",\n  \"email\": \"vikram@techcorp.in\",\n  \"company\": \"TechCorp Solutions\",\n  \"source\": \"website\",\n  \"location\": \"Koramangala\",\n  \"spaceType\": \"Managed Office\",\n  \"seats\": \"20\",\n  \"budget\": \"₹2,00,000/mo\",\n  \"notes\": \"Looking for 20 seats with private meeting room.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leads",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads"]
+            }
+          }
+        },
+        {
+          "name": "2. Get Paginated Leads (Page 1, Limit 10)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "all", "disabled": true },
+                { "key": "source", "value": "website", "disabled": true },
+                { "key": "search", "value": "Koramangala", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Search & Filter Leads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads?page=1&limit=10&search=Koramangala&status=new",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "Koramangala" },
+                { "key": "status", "value": "new" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Get Lead by ID (with Timeline)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}"]
+            }
+          }
+        },
+        {
+          "name": "5. Update Full Lead Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Vikram Reddy\",\n  \"seats\": \"25\",\n  \"notes\": \"Updated: Increased requirement to 25 seats.\",\n  \"budget\": \"₹2,50,000/mo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}"]
+            }
+          }
+        },
+        {
+          "name": "6. Update Lead Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"qualified\",\n  \"reason\": \"Budget and move-in timeline verified.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "7. Add Note to Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Client requested floor layout and walkthrough video.\",\n  \"author\": \"Senior Consultant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}", "notes"]
+            }
+          }
+        },
+        {
+          "name": "8. Get Lead Activities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}", "activities"]
+            }
+          }
+        },
+        {
+          "name": "9. Log Follow-up Outreach",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leadId\": \"{{leadId}}\",\n  \"name\": \"Vikram Reddy\",\n  \"phone\": \"+91 9845012345\",\n  \"type\": \"whatsapp\",\n  \"body\": \"Sent brochure and pricing sheet via WhatsApp.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/followup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "followup"]
+            }
+          }
+        },
+        {
+          "name": "10. Delete Lead",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/leads/{{leadId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "leads", "{{leadId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calls & Logs",
+      "item": [
+        {
+          "name": "1. Get Paginated Calls (Page 1, Limit 10)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sentiment", "value": "Positive", "disabled": true },
+                { "key": "status", "value": "completed", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Get Logs (Alias for Calls)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/logs?page=1&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "logs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Simulate Completed Call Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leadName\": \"Vikram Reddy\",\n  \"phone\": \"+91 9845012345\",\n  \"callSummary\": \"Vikram confirmed 25 seats requirement in Koramangala and confirmed site visit for Friday 3 PM.\",\n  \"outcome\": \"Site Visit Scheduled\",\n  \"sentiment\": \"Positive\",\n  \"callbackTime\": \"Friday 3:00 PM\",\n  \"status\": \"completed\",\n  \"seats\": \"25\",\n  \"location\": \"Koramangala\",\n  \"spaceType\": \"Managed Office\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/simulate-call",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "simulate-call"]
+            }
+          }
+        },
+        {
+          "name": "4. Trigger Real Test Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Vikram Reddy\",\n  \"phone\": \"+91 9845012345\",\n  \"location\": \"Koramangala\",\n  \"seats\": \"20\",\n  \"workspaceType\": \"Managed Office\",\n  \"callType\": \"confirm_agent\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/test-call",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test-call"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Automation",
+      "item": [
+        {
+          "name": "1. AI Score Leads",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leads\": [\n    {\n      \"id\": \"lead_1\",\n      \"name\": \"Vikram Reddy\",\n      \"status\": \"qualified\",\n      \"sentiment\": \"Positive\",\n      \"requirementsChanged\": true,\n      \"seats\": \"25\",\n      \"spaceType\": \"Managed Office\",\n      \"location\": \"Koramangala\",\n      \"email\": \"vikram@techcorp.in\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/score",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "score"]
+            }
+          }
+        },
+        {
+          "name": "2. AI Generate Follow-up Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mode\": \"write\",\n  \"lead\": {\n    \"name\": \"Vikram\",\n    \"spaceType\": \"Managed Office\",\n    \"seats\": \"20\",\n    \"location\": \"Koramangala\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "email"]
+            }
+          }
+        },
+        {
+          "name": "3. AI Pipeline Insights",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"summary\": {\n    \"total\": 45,\n    \"recentLeads\": 8\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/insights",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "insights"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

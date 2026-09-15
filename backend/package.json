@@ -1,0 +1,32 @@
+{
+  "name": "calling_agent",
+  "version": "1.0.0",
+  "description": "Calling Agent Backend",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --require dotenv/config src/server.js",
+    "frontend": "npm start --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
+    "update-agent": "node scripts/updateBolnaAgent.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.7.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "libphonenumber-js": "^1.11.7",
+    "mysql2": "^3.11.4",
+    "sequelize": "^6.37.5",
+    "winston": "^3.17.0",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
